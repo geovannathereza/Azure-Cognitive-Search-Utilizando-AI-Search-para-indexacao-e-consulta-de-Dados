@@ -1,10 +1,8 @@
 # Azure Cognitive Search: Utilizando AI Search para indexação e consulta de Dados
 
-
-
 ## Configuração de uma Pesquisa Inteligente com Azure AI Search
 
-Este guia documenta o passo a passo para configurar uma pesquisa inteligente usando o **Azure AI Search**, capaz de extrair, indexar e buscar informações em um repositório de documentos não estruturados, além de apresentar os insights, ferramentas complementares e aprendizados adquiridos durante o processo.
+Este guia documenta o passo a passo para configurar uma pesquisa inteligente usando o **Azure AI Search**, capaz de extrair, indexar e buscar informações em um repositório de documentos não estruturados.
 
 ## Passo a Passo da Configuração
 
@@ -53,7 +51,7 @@ Este guia documenta o passo a passo para configurar uma pesquisa inteligente usa
 
 ### 5. Configuração do Índice e indexação dos documentos
 #### Após armazenar os documentos, você pode utilizar o Azure AI Search para obter insights deles. O portal do Azure oferece um assistente para importar dados. Com esse assistente, é possível criar automaticamente um índice e indexador para fontes de dados compatíveis. Você usará esse assistente para criar o índice e transferir seus documentos de pesquisa do armazenamento para o índice do Azure AI Search.
-- No portal do Azure, navegue até seu recurso do Azure AI Search. Na página Visão geral, selecione **Import data**.
+- No portal do Azure, navegue até seu recurso do Azure AI Search. Na página **Overview**, selecione **Import data**.
 - Na página Conectar aos seus dados, na lista Fonte de dados, selecione **Azure Blob Storage**. Preencha os detalhes do armazenamento de dados com os seguintes valores:
   - Fonte de dados (Azure Blob Storage);
   - Nome da fonte de dados;
@@ -91,7 +89,7 @@ Este guia documenta o passo a passo para configurar uma pesquisa inteligente usa
 - Clique em **+ Container**, crie um container chamado **knowledge-store** e defina o nível de privacidade como **Private**. Em seguida, clique em **Create**.
 - Selecione o container **knowledge-store** e clique em **Select**.
 - Selecione **Azure blob projections: Document**. O nome do container será preenchido automaticamente. Não altere o nome do container.
-- Clique em **Next: Customize target index** e altere o nome do índice para **coffee-index**.
+- Clique em **Next: Customize target index** e altere o nome do índice.
 - Defina o **Key** como **metadata_storage_path** e deixe o **Suggester name** em branco.
 - Marque a opção **filterable** para os campos: content, locations, keyphrases, sentiment, merged_content, text, layoutText, imageTags, imageCaption.
 - Clique em **Next: Create an indexer**, altere o nome e mantenha o **Schedule** como **Once**.
@@ -99,6 +97,44 @@ Este guia documenta o passo a passo para configurar uma pesquisa inteligente usa
 - Clique em **Submit** para criar o recurso, skillset, índice e indexador. O indexador será executado automaticamente.
 - Na página do recurso Azure AI Search, vá até **Search Management** e selecione **Indexers**. Clique no indexer criado e, logo depois, clique em **Refresh** até o status indicar sucesso.
 - Clique no nome do indexador para ver mais detalhes.
+---
+
+### 6. Consultar o índice
+- Na página de **Overview** do seu serviço de pesquisa, selecione **Search explorer** no topo da tela.
+- Certifique-se de que o índice selecionado seja o que você criou. Abaixo do índice, altere a visualização para **JSON view**.
+- No campo do editor JSON, cole o seguinte código para buscar todos os documentos:
+     ```json
+     {
+         "search": "*",
+         "count": true
+     }
+     ```
+- Clique em **Search**. O resultado será uma lista de documentos com a contagem total no campo `@odata.count`.
+- Para filtrar documentos pela localização "Chicago", digite no editor JSON:
+     ```json
+     {
+         "search": "locations:'Chicago'",
+         "count": true
+     }
+     ```
+- Clique em **Search**. A contagem de documentos será exibida no campo `@odata.count`.
+- Para filtrar por sentimento negativo, use o código:
+     ```json
+     {
+         "search": "sentiment:'negative'",
+         "count": true
+     }
+     ```
+- Clique em **Search**. O número de documentos será exibido no campo `@odata.count`.
+---
+
+## O que é possível construir com AI Search?
+ O AI Search pode ser aplicado nos mais diversos setores do mercado, sendo algumas de suas aplicações: Buscadores de documentos corporativos, Pesquisa semântica em bases jurídicas, FAQs dinâmicas automatizadas, Ferramentas de suporte ao cliente com recuperação de respostas, Análise de dados não estruturados.
+
+ ## Conclusão
+O Azure AI Search é uma solução robusta com capacidade de transformar grandes volumes de dados não estruturados em insights úteis. Ao final deste processo, foi possível aprender desde a preparação dos dados até a realização de consultas, entendendo o potencial de combinar IA com mecanismos de busca.
+
+
 
 
 
