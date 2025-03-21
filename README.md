@@ -50,79 +50,55 @@ Este guia documenta o passo a passo para configurar uma pesquisa inteligente usa
 - Faça **Upload** dos arquivos (PDFs, DOCs, TXTs) que serão indexados;
 - **Dica:** Estruture bem os documentos para facilitar o reconhecimento de conteúdo.
 ---
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
 
-### 3. **Configurar o Data Source (Fonte de Dados)**
-- No serviço Azure AI Search, acesse **Data Sources**;
-- Clique em **+ Add Data Source**;
-- Selecione o Blob Storage e a conexão criada;
-- Defina o container de documentos;
-- Escolha a opção de usar o **Cognitive Skills (AI Enrichment)** se desejar enriquecer os dados com IA (extração de texto, imagens, tradução, etc.).
+### 5. Configuração do Índice e indexação dos documentos
+#### Após armazenar os documentos, você pode utilizar o Azure AI Search para obter insights deles. O portal do Azure oferece um assistente para importar dados. Com esse assistente, é possível criar automaticamente um índice e indexador para fontes de dados compatíveis. Você usará esse assistente para criar o índice e transferir seus documentos de pesquisa do armazenamento para o índice do Azure AI Search.
+- No portal do Azure, navegue até seu recurso do Azure AI Search. Na página Visão geral, selecione **Import data**.
+- Na página Conectar aos seus dados, na lista Fonte de dados, selecione **Azure Blob Storage**. Preencha os detalhes do armazenamento de dados com os seguintes valores:
+  - Fonte de dados (Azure Blob Storage);
+  - Nome da fonte de dados;
+  - Dados para extrair;
+  - Modo de análise;
+  - Sequência de conexão (Opte por **Choose an existing connection**. Selecione sua conta de armazenamento, selecione o contêiner que criou e clique em **Select**);
+  - Autenticação de identidade gerenciada;
+  - Nome do contêiner;
+  - Pasta Blob;
+  - Descrição;
+- Selecione **Next: Add cognitive skills (Optional)**.
+- Na seção **Attach AI Services**, selecione seu recurso de serviços de IA do Azure.
+- Na seção **Add enrichments**:
+  - Altere o nome do conjunto de habilidades.
+  - Marque a caixa **Enable OCR** e mescle todo o texto no campo **merged_content**.
+  - **Nota**: É importante habilitar o **Enable OCR** para ver todas as opções de campos enriquecidos.
+  - Defina o campo **Source data** como **merged_content**.
+  - Altere o nível de granularidade do aprimoramento para **Pages** (blocos de 5000 caracteres).
+  - Não selecione **Enable incremental enrichment**.
+  - Selecione os seguintes campos enriquecidos:\
+     **Extrair nomes de localizações → "locations"\
+     Extrair frases-chave → "keyphrases"\
+     Detectar sentimento → "sentiment"\
+     Gerar tags a partir de imagens → "imageTags"\
+     Gerar legendas a partir de imagens → "imageCaption"**
+- Em **Save enrichments to a knowledge store**, selecione:
+   - Projeções de imagem
+   - Documentos
+   - Páginas
+   - Frases-chave
+   - Entidades
+   - Detalhes da imagem
+   - Referências de imagem
+- Escolha **Choose an existing connection**: Selecione a conexão já criada e o armazenamento de dados que você criou anteriormente.
+- Clique em **+ Container**, crie um container chamado **knowledge-store** e defina o nível de privacidade como **Private**. Em seguida, clique em **Create**.
+- Selecione o container **knowledge-store** e clique em **Select**.
+- Selecione **Azure blob projections: Document**. O nome do container será preenchido automaticamente. Não altere o nome do container.
+- Clique em **Next: Customize target index** e altere o nome do índice para **coffee-index**.
+- Defina o **Key** como **metadata_storage_path** e deixe o **Suggester name** em branco.
+- Marque a opção **filterable** para os campos: content, locations, keyphrases, sentiment, merged_content, text, layoutText, imageTags, imageCaption.
+- Clique em **Next: Create an indexer**, altere o nome e mantenha o **Schedule** como **Once**.
+- Expanda as **Advanced options** e marque a opção **Base-64 Encode Keys**.
+- Clique em **Submit** para criar o recurso, skillset, índice e indexador. O indexador será executado automaticamente.
+- Na página do recurso Azure AI Search, vá até **Search Management** e selecione **Indexers**. Clique no indexer criado e, logo depois, clique em **Refresh** até o status indicar sucesso.
+- Clique no nome do indexador para ver mais detalhes.
 
----
 
-### 4. **Criar o Indexador**
-- Vá para **Indexers** e clique em **+ Add Indexer**;
-- Configure a periodicidade de indexação;
-- Defina o campo `key` (identificador único de cada documento);
-- Execute o indexador e monitore o status.
-
----
-
-### 5. **Definir o Índice de Busca**
-- Acesse **Indexes** e clique em **+ Add Index**;
-- Estruture os campos extraídos do conteúdo;
-- Defina quais campos são:
-  - **Searchable** (pesquisáveis);
-  - **Retrievable** (retornáveis nas respostas);
-  - **Filterable / Sortable / Facetable** (para filtros e organização).
-
----
-
-### 6. **Executar as Consultas**
-- Utilize o portal ou a API REST para fazer buscas;
-- Exemplo de query REST:
-  ```
-  GET https://<search-service-name>.search.windows.net/indexes/<index-name>/docs?search=termo&api-version=2021-04-30-Preview
-  ```
-- Analise os resultados retornados.
-
----
-
-## 🔍 Insights e Possibilidades
-
-### 💡 **O que é possível construir com AI Search**
-- Buscadores de documentos corporativos;
-- Pesquisa semântica em bases jurídicas;
-- FAQs dinâmicas automatizadas;
-- Ferramentas de suporte ao cliente com recuperação de respostas;
-- Análise de dados não estruturados.
-
-### 🧠 **Principais Aprendizados**
-- A importância de um bom design de indexação;
-- Como a IA pode ser aplicada para extrair e enriquecer dados;
-- O poder da pesquisa semântica versus a tradicional por palavra-chave;
-- Integração de diversos serviços Azure (Storage, Cognitive Services e Search).
-
----
-
-## 🧰 Ferramentas que se beneficiam da integração
-- **Power BI**: Conectando a uma Search API para criar dashboards inteligentes;
-- **Chatbots (Azure Bot Service / Power Virtual Agents)**: Buscando respostas diretamente do índice;
-- **Aplicações Web**: Enriquecendo sistemas internos com busca avançada;
-- **Sistemas Jurídicos, Saúde e Educação**: Onde o volume de documentos exige pesquisa eficiente.
-
----
-
-## ✅ Conclusão
-O Azure AI Search é uma solução robusta para transformar grandes volumes de dados não estruturados em insights acessíveis. Ao final do processo, foi possível entender desde a preparação dos dados até a realização de consultas otimizadas, percebendo o potencial de combinar IA com mecanismos de busca.
 
